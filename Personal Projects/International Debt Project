@@ -1,1 +1,59 @@
+-- Total number of countries in the dataset
+SELECT COUNT (DISTINCT "country_name") AS distinct_country_count
+FROM dbo.international_debt$;
+
+-- Find out the distinct debt indicators
+SELECT DISTINCT indicator_code AS distinct_debt_indicators
+FROM dbo.international_debt$
+ORDER BY distinct_debt_indicators
+
+-- Find out the total amount of debt owed by countries
+SELECT
+	SUM(debt) AS total_debt
+FROM dbo.international_debt$
+
+-- Top 10 countries with the most debt
+SELECT TOP 10
+	country_name,
+	SUM(debt) AS Total_debt
+FROM dbo.international_debt$
+GROUP BY country_name
+ORDER BY Total_debt DESC
+
+-- Find out the average ammount of debt among indicators
+SELECT
+	indicator_code AS debt_code,
+	indicator_name,
+	AVG(debt) AS average_debt
+FROM dbo.international_debt$
+GROUP BY indicator_code, indicator_name
+ORDER BY average_debt DESC
+
+-- Longterm debt ammount only by countries
+SELECT 
+    country_name, 
+    indicator_name,
+	debt
+FROM dbo.international_debt$
+WHERE indicator_code = 'DT.AMT.DLXF.CD';
+
+-- Find out the country with the highest ammount of longterm debt
+SELECT 
+    country_name, 
+    indicator_name,
+	debt
+FROM dbo.international_debt$
+WHERE debt = (SELECT 
+                 MAX(debt)
+             FROM dbo.international_debt$
+             WHERE indicator_code = 'DT.AMT.DLXF.CD');
+
+-- Find out the most common debt indicator in the dataset
+SELECT 
+	indicator_code,
+	indicator_name,
+	COUNT(indicator_code) AS number_taken
+FROM dbo.international_debt$
+GROUP BY indicator_code, indicator_name
+ORDER BY number_taken DESC
 
